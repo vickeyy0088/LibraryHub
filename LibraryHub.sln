@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Solution>
+  <Project Path="LibraryHub/LibraryHub.csproj" />
+  <Project Path="LibraryHub_Aspire/LibraryHub_Aspire.csproj" />
+  <Project Path="Migration_Services/Migration_Services.csproj" />
+  <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
+  <Project Path="UnitTests/UnitTests.csproj" Id="c9b8a919-a501-49d9-8ec3-93465cde9863" />
+</Solution>

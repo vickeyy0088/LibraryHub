@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="LibraryHub.tests/LibraryHub.Tests.csproj" />
+  <Project Path="LibraryHub/LibraryHub.csproj" />
+  <Project Path="LibraryHub_Aspire/LibraryHub_Aspire.csproj" />
+  <Project Path="Migration_Services/Migration_Services.csproj" />
+  <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
+</Solution>

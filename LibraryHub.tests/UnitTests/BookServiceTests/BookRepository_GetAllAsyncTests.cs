@@ -1,6 +1,7 @@
 using FluentAssertions;
 using LibraryHub.Data;
 using LibraryHub.DTOs.Pagination;
+using LibraryHub.Helpers;
 using LibraryHub.Models;
 using LibraryHub.Services;
 using LibraryHub.Shared;
@@ -19,7 +20,7 @@ public class BookRepository_GetAllAsyncTests
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         _dbContext = new ApplicationDbContext(options);
-        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object);
+        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object, new Mock<ICacheHelper>().Object);
     }
 
     [Theory]
@@ -42,12 +43,12 @@ public class BookRepository_GetAllAsyncTests
     public async Task GetAllAsync_ShouldReturnPaginatedBooksAndFilterBySearch()
     {
         // Arrange
-        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" });
-        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" });
-        await _dbContext.Books.AddRangeAsync(
-            new Book { Id = 1, Title = "War and Peace", ISBN = "978-1", AuthorId = 1, CategoryId = 1 },
-            new Book { Id = 2, Title = "Anna Karenina", ISBN = "978-2", AuthorId = 1, CategoryId = 1 });
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" }, TestContext.Current.CancellationToken);
+        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" }, TestContext.Current.CancellationToken);
+        await _dbContext.Books.AddRangeAsync(new Book { Id = 1, Title = "War and Peace", ISBN = "978-1", AuthorId = 1, CategoryId = 1 },
+                                             new Book { Id = 2, Title = "Anna Karenina", ISBN = "978-2", AuthorId = 1, CategoryId = 1 }
+                                            );
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var query = new PaginationParams { PageNumber = 1, PageSize = 10, Search = "Peace" };
 

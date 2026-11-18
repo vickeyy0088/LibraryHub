@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using LibraryHub.Data;
 using LibraryHub.DTOs.Author;
+using LibraryHub.Helpers;
 using LibraryHub.Services;
 using LibraryHub.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ public class AuthorRepository_CreateAsyncTests
     private readonly Mock<ILogger<AuthorRepository>> _loggerMock;
     private readonly AuthorRepository _authorRepository;
 
+
     public AuthorRepository_CreateAsyncTests()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -23,7 +25,7 @@ public class AuthorRepository_CreateAsyncTests
 
         _dbContext = new ApplicationDbContext(options);
         _loggerMock = new Mock<ILogger<AuthorRepository>>();
-        _authorRepository = new AuthorRepository(_dbContext, _loggerMock.Object);
+        _authorRepository = new AuthorRepository(_dbContext, _loggerMock.Object, new Mock<ICacheHelper>().Object);
     }
 
     [Theory]
@@ -51,7 +53,7 @@ public class AuthorRepository_CreateAsyncTests
         result.Message.Should().Be(ApiMessage.Authors.FullNameIsRequired);
         result.Data.Should().BeNull();
 
-        (await _dbContext.Authors.CountAsync()).Should().Be(0);
+        (await _dbContext.Authors.CountAsync(cancellationToken: TestContext.Current.CancellationToken)).Should().Be(0);
     }
 
     [Fact]
@@ -78,7 +80,7 @@ public class AuthorRepository_CreateAsyncTests
         result.Data.Biography.Should().Be(request.Biography);
 
         // Verify persisted in DB
-        var savedAuthor = await _dbContext.Authors.FindAsync(result.Data.Id);
+        var savedAuthor = await _dbContext.Authors.FindAsync(new object?[] { result.Data.Id }, TestContext.Current.CancellationToken);
         savedAuthor.Should().NotBeNull();
         savedAuthor!.FirstName.Should().Be(request.FirstName);
         savedAuthor.LastName.Should().Be(request.LastName);

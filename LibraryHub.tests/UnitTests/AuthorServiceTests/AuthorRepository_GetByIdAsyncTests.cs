@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using LibraryHub.Data;
+using LibraryHub.Helpers;
 using LibraryHub.Models;
 using LibraryHub.Services;
 using LibraryHub.Shared;
@@ -23,7 +24,7 @@ public class AuthorRepository_GetByIdAsyncTests
 
         _dbContext = new ApplicationDbContext(options);
         _loggerMock = new Mock<ILogger<AuthorRepository>>();
-        _authorRepository = new AuthorRepository(_dbContext, _loggerMock.Object);
+        _authorRepository = new AuthorRepository(_dbContext, _loggerMock.Object, new Mock<ICacheHelper>().Object);
     }
 
     [Theory]

@@ -29,5 +29,5 @@ public class Book : ISoftDelete // all books have one author & category
     public ICollection<Loan> Loans { get; set; } = [];
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public uint Version { get; set; }
+    //public uint Version { get; set; }
 }

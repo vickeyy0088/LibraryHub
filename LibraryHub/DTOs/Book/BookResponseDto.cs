@@ -13,5 +13,5 @@ public class BookResponseDto
     public string AuthorName { get; set; } = string.Empty;
     public int CategoryId { get; set; }
     public string CategoryName { get; set; } = string.Empty;
-    public uint Version { get; set; }
+    // public uint Version { get; set; }
 }

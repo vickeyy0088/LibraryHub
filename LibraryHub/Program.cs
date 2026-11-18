@@ -2,14 +2,13 @@ using LibraryHub.Extensions;
 //using LibraryHub.Middleware;
 using LibraryHub.Shared;
 using ServiceDefaults;
-//using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // OpenTelemetry 
 builder.AddServiceDefaults();
 
-//// 1. Configure Serilog
+// 1. Configure Serilog
 //Log.Logger = new LoggerConfiguration()
 //    .MinimumLevel.Information()
 //    .WriteTo.Console()

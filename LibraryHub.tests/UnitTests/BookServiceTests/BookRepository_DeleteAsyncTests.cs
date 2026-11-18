@@ -1,5 +1,6 @@
 using FluentAssertions;
 using LibraryHub.Data;
+using LibraryHub.Helpers;
 using LibraryHub.Models;
 using LibraryHub.Services;
 using LibraryHub.Shared;
@@ -18,7 +19,7 @@ public class BookRepository_DeleteAsyncTests
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         _dbContext = new ApplicationDbContext(options);
-        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object);
+        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object, new Mock<ICacheHelper>().Object);
     }
 
     [Theory]
@@ -50,10 +51,10 @@ public class BookRepository_DeleteAsyncTests
     public async Task DeleteAsync_ShouldSoftDelete_WhenBookExistsWithoutLoans()
     {
         // Arrange
-        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" });
-        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" });
-        await _dbContext.Books.AddAsync(new Book { Id = 1, Title = "Book", ISBN = "978-1", AuthorId = 1, CategoryId = 1 });
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" }, TestContext.Current.CancellationToken);
+        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" }, TestContext.Current.CancellationToken);
+        await _dbContext.Books.AddAsync(new Book { Id = 1, Title = "Book", ISBN = "978-1", AuthorId = 1, CategoryId = 1 }, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
         // Act
         var result = await _repository.DeleteAsync(1);
 
@@ -61,7 +62,7 @@ public class BookRepository_DeleteAsyncTests
         result.Success.Should().BeTrue();
         result.Message.Should().Be(ApiMessage.Books.Deleted);
         result.Data.Should().BeTrue();
-        var deleted = await _dbContext.Books.IgnoreQueryFilters().SingleAsync(b => b.Id == 1);
+        var deleted = await _dbContext.Books.IgnoreQueryFilters().SingleAsync(b => b.Id == 1, cancellationToken: TestContext.Current.CancellationToken);
         deleted.IsDeleted.Should().BeTrue();
         deleted.DeletedAt.Should().NotBeNull();
     }

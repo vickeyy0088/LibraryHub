@@ -1,6 +1,7 @@
 using FluentAssertions;
 using LibraryHub.Data;
 using LibraryHub.DTOs.Book;
+using LibraryHub.Helpers;
 using LibraryHub.Models;
 using LibraryHub.Services;
 using LibraryHub.Shared;
@@ -20,7 +21,7 @@ public class BookRepository_CreateAsyncTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         _dbContext = new ApplicationDbContext(options);
-        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object);
+        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object, new Mock<ICacheHelper>().Object);
     }
 
     [Theory]
@@ -62,9 +63,9 @@ public class BookRepository_CreateAsyncTests
     public async Task CreateAsync_ShouldSucceed_WhenRequestIsValid()
     {
         // Arrange
-        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" });
-        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" });
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" }, TestContext.Current.CancellationToken);
+        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" }, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
         var request = new BookCreateDto { Title = "War and Peace", ISBN = "978-1", Price = 25, TotalCopies = 4, AuthorId = 1, CategoryId = 1 };
 
         // Act
@@ -78,17 +79,17 @@ public class BookRepository_CreateAsyncTests
         result.Data.AvailableCopies.Should().Be(request.TotalCopies);
         result.Data.AuthorName.Should().Be("Leo Tolstoy");
         result.Data.CategoryName.Should().Be("Fiction");
-        (await _dbContext.Books.CountAsync()).Should().Be(1);
+        (await _dbContext.Books.CountAsync(cancellationToken: TestContext.Current.CancellationToken)).Should().Be(1);
     }
 
     [Fact]
     public async Task CreateAsync_ShouldFail_WhenIsbnAlreadyExists()
     {
         // Arrange
-        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" });
-        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" });
-        await _dbContext.Books.AddAsync(new Book { Title = "Existing", ISBN = "978-1", AuthorId = 1, CategoryId = 1 });
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Authors.AddAsync(new Author { Id = 1, FirstName = "Leo", LastName = "Tolstoy" }, TestContext.Current.CancellationToken);
+        await _dbContext.Categories.AddAsync(new Category { Id = 1, Name = "Fiction" }, TestContext.Current.CancellationToken);
+        await _dbContext.Books.AddAsync(new Book { Title = "Existing", ISBN = "978-1", AuthorId = 1, CategoryId = 1 }, TestContext.Current.CancellationToken);
+        await _dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
         var result = await _repository.CreateAsync(new BookCreateDto { Title = "Another", ISBN = "978-1", AuthorId = 1, CategoryId = 1 });

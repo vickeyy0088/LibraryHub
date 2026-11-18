@@ -23,5 +23,5 @@ public class BookRequestDto
 
     [Range(1, int.MaxValue)]
     public int CategoryId { get; set; }
-    public uint Version { get; set; }
+    //public uint Version { get; set; }
 }

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using LibraryHub.Data;
 using LibraryHub.DTOs.Book;
+using LibraryHub.Helpers;
 using LibraryHub.Models;
 using LibraryHub.Services;
 using LibraryHub.Shared;
@@ -19,7 +20,7 @@ public class BookRepository_UpdateAsyncTests
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         _dbContext = new ApplicationDbContext(options);
-        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object);
+        _repository = new BookRepository(_dbContext, new Mock<ILogger<BookRepository>>().Object, new Mock<ICacheHelper>().Object);
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public class BookRepository_UpdateAsyncTests
     {
         // Arrange
         await SeedAsync();
-        var request = new BookUpdateDto { Title = "Updated", ISBN = "978-2", Price = 30, TotalCopies = 5, AuthorId = 1, CategoryId = 1, Version = 0 };
+        var request = new BookUpdateDto { Title = "Updated", ISBN = "978-2", Price = 30, TotalCopies = 5, AuthorId = 1, CategoryId = 1, };
         // Act
         var result = await _repository.UpdateAsync(1, request);
 
@@ -66,7 +67,7 @@ public class BookRepository_UpdateAsyncTests
         result.Message.Should().Be(ApiMessage.Books.Updated);
         result.Data!.Title.Should().Be("Updated");
         result.Data.AvailableCopies.Should().Be(5);
-        (await _dbContext.Books.FindAsync(1))!.Title.Should().Be("Updated");
+        (await _dbContext.Books.FindAsync(new object?[] { 1 }, TestContext.Current.CancellationToken))!.Title.Should().Be("Updated");
     }
 
     private async Task SeedAsync()

@@ -36,9 +36,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasQueryFilter(loan => !loan.IsDeleted);
 
         // Configure the Version property as a concurrency token
-        builder.Entity<Book>()
-        .Property(b => b.Version)
-        .IsRowVersion();
+        //builder.Entity<Book>()
+        //.Property(b => b.Version)
+        //.IsRowVersion();
 
         builder.Entity<Book>()   // Book Author -  (1-M)
            .HasOne(x => x.Author)

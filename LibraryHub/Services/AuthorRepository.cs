@@ -1,5 +1,4 @@
-﻿
-using LibraryHub.Data;
+﻿using LibraryHub.Data;
 using LibraryHub.DTOs.Author;
 using LibraryHub.DTOs.Pagination;
 using LibraryHub.Extensions;

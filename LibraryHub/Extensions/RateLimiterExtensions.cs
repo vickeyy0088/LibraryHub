@@ -17,7 +17,7 @@ namespace LibraryHub.Extensions
                             factory: _ => new FixedWindowRateLimiterOptions
                             {
                                 PermitLimit = 5,
-                                Window = TimeSpan.FromSeconds(10),
+                                Window = TimeSpan.FromMinutes(15),
                                 QueueLimit = 0
                             }));
             });

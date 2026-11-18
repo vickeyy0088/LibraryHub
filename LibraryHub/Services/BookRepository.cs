@@ -148,6 +148,12 @@ public class BookRepository(
             return ApiResponse<BookResponseDto>.Fail(ApiMessage.Books.CategoryNotFound);
         }
 
+        if (request.AvailableCopies > request.TotalCopies)
+        {
+            _logger.LogWarning("Available copies cannot exceed total copies. TotalCopies: {TotalCopies}, AvailableCopies: {AvailableCopies}", request.TotalCopies, request.AvailableCopies);
+            return ApiResponse<BookResponseDto>.Fail(ApiMessage.Books.AvailableCopiesExceedTotal);
+        }
+
         if (await _context.Books.AnyAsync(b => b.ISBN == request.ISBN))
         {
             _logger.LogWarning("Duplicate ISBN during book creation.");

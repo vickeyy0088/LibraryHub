@@ -18,6 +18,9 @@ public class BookRequestDto
     [Range(0, int.MaxValue)]
     public int TotalCopies { get; set; }
 
+    [Range(0, int.MaxValue)]
+    public int AvailableCopies { get; set; }
+
     [Range(1, int.MaxValue)]
     public int AuthorId { get; set; }
 

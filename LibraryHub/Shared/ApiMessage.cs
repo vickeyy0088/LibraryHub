@@ -49,6 +49,7 @@
             //public const string UpdateFailed = "Failed to update book.";
             //public const string PriceInvalid = "Book price cannot be negative.";
             public const string TotalCopiesInvalid = "Total copies cannot be negative.";
+            public const string AvailableCopiesExceedTotal = "Available copies cannot exceed total copies.";
             public const string AuthorNotFound = "The specified author does not exist.";
             public const string CategoryNotFound = "The specified category does not exist.";
             public const string HasLoans = "This book cannot be deleted because loan records exist.";
